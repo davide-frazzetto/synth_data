@@ -54,12 +54,24 @@ def write_device(device_name, house, load, time_index):
     cursor.execute(query, (config.device_id, house,))
     db_con_string.commit()
 
-    query = "INSERT INTO LogWatt(date, watt, unitID) VALUES(%s, %s, %s)"
+    query = "INSERT INTO LogWatt(date, watt, unitID) VALUES"
     # combine time index and load
     for i in range(len(time_index)):
-        cursor.execute(query, (time_index[i], load[i], config.device_id,))
-    db_con_string.commit()
-    db_con_string.close()
+        query += "('" + str(time_index[i]) + "'," + str(load[i]) + "," + str(config.device_id) + ")"
+        if i < len(time_index) - 1:
+            query += ",\n"
+
+    query += ";\n"
+
+    if not os.path.exists(config.folder + '/' + "insert"):
+        # overwrite
+        f = open(config.folder + '/' + "insert", 'w')
+    else:
+        # append
+        f = open(config.folder + '/' + "insert", 'a')
+    f.write(query)
+    f.close()
+
 
     config.device_id += 1
 
@@ -142,12 +154,23 @@ def write_non_flex_dev_to_db(device_name, house_num, load):
     cursor.execute(query, (config.device_id, house_num,))
     db_con_string.commit()
 
-    query = "INSERT INTO LogWatt(date, watt, unitID) VALUES(%s, %s, %s)"
+    query = "INSERT INTO LogWatt(date, watt, unitID) VALUES"
     # combine time index and load
     for i in range(len(time_index)):
-        cursor.execute(query, (time_index[i], load[i], config.device_id,))
-    db_con_string.commit()
-    db_con_string.close()
+        query += "('" + str(time_index[i]) + "'," + str(load[i]) + "," + str(config.device_id) + ")"
+        if i < len(time_index) -1:
+            query += ",\n"
+
+    query += ";\n"
+
+    if not os.path.exists(config.folder + '/' + "insert"):
+        # overwrite
+        f = open(config.folder + '/' + "insert", 'w')
+    else:
+        # append
+        f = open(config.folder + '/' + "insert", 'a')
+    f.write(query)
+    f.close()
 
     config.device_id += 1
 
@@ -235,9 +258,8 @@ def writeDeviceTimeshiftable(machine, hnum):
         text = str(hnum) + ':'
         text += machine.LongProfile
         # writeCsvLine('WashingMachine_Profile.txt', hnum, text)
-
-    load_series = device_time_series_generator(starting_times, machine.LongProfile.replace("complex","").replace("(","").split("),"))
-    write_device(machine.name, hnum, load_series, config.time_index)
+        load_series = device_time_series_generator(starting_times, machine.LongProfile.replace("complex","").replace("(","").split("),"))
+        write_device(machine.name, hnum, load_series, config.time_index)
 
 
 

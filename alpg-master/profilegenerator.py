@@ -54,7 +54,7 @@ hnum = 0
 householdList = config.householdList
 numOfHouseholds = len(householdList)
 
-
+config.cleanup_db()
 
 if not os.path.exists(config.folder):
 	os.makedirs(config.folder)
