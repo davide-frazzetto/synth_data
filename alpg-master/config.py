@@ -22,9 +22,10 @@
 #This is an example configuration file!
 
 import random, csv, io, os, numpy, datetime, math
-
+import dateutil.parser as parser
 #For this dependency: run "sudo pip install astral"
 from astral import Astral
+import pandas as pd
 
 import profilegentools
 
@@ -53,9 +54,14 @@ weather_timebaseDataset = 3600 #in seconds per interval
 numDays = 365			# number of days
 startDay = 0			# Initial day
 
+device_id = 0
+# time series for 2015, sampling interval: 60 seconds
+time_index = pd.date_range('1/1/2015', periods = numDays*24*60, freq='60S')
+
+
 
 #Select the geographic location. Refer to the Astral plugin to see available locations (or give a lon+lat)
-city_name = 'Amsterdam' 
+city_name = 'Copenhagen'
 a = Astral()
 a.solar_depression = 'civil'
 city = a[city_name]
@@ -136,38 +142,34 @@ personWeekdayActivityChanceMax = 	30 	#percentage
 personWeekendActivityChanceMin = 	20 	#percentage
 personWeekendActivityChanceMax = 	30 	#percentage
 
-
-
-
-
-#Select the types of households
+# Select the types of households
 import households
 
 householdList = []
 
-for i in range(0,22):
+for i in range(0, 1):
 	householdList.append(households.HouseholdSingleWorker())
-	
-for i in range(0,22):
+
+for i in range(0, 1):
 	householdList.append(households.HouseholdSingleRetired())
-	
-for i in range(0,11):
+
+for i in range(0, 1):
 	householdList.append(households.HouseholdDualWorker(True))
-	
-for i in range(0,11):
+
+for i in range(0, 1):
 	householdList.append(households.HouseholdDualWorker(False))
-	
-for i in range(0,22):
-	householdList.append(households.HouseholdDualRetired())	
-	
-for i in range(0,20):
-	householdList.append(households.HouseholdFamilyDualWorker(True))
-	
-for i in range(0,10):
-	householdList.append(households.HouseholdFamilyDualWorker(False))
-	
-for i in range(0,3):
-	householdList.append(households.HouseholdFamilySingleWorker(True))
+
+# for i in range(0, 1):
+# 	householdList.append(households.HouseholdDualRetired())
+#
+# for i in range(0, 1):
+# 	householdList.append(households.HouseholdFamilyDualWorker(True))
+#
+# for i in range(0, 1):
+# 	householdList.append(households.HouseholdFamilyDualWorker(False))
+#
+# for i in range(0, 1):
+# 	householdList.append(households.HouseholdFamilySingleWorker(True))
 
 numHouses = len(householdList)
 
