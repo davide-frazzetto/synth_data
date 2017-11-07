@@ -159,17 +159,17 @@ for i in range(0, 40):
 for i in range(0, 40):
 	householdList.append(households.HouseholdDualWorker(False))
 
- for i in range(0, 40):
+for i in range(0, 40):
  	householdList.append(households.HouseholdDualRetired())
 
- for i in range(0, 40):
+for i in range(0, 40):
  	householdList.append(households.HouseholdFamilyDualWorker(True))
 
- for i in range(0, 40):
- 	householdList.append(households.HouseholdFamilyDualWorker(False))
+for i in range(0, 40):
+    householdList.append(households.HouseholdFamilyDualWorker(False))
 
- for i in range(0, 40):
- 	householdList.append(households.HouseholdFamilySingleWorker(True))
+for i in range(0, 40):
+    householdList.append(households.HouseholdFamilySingleWorker(True))
 
 numHouses = len(householdList)
 
