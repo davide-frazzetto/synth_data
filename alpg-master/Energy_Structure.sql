@@ -1,6 +1,8 @@
+CREATE DATABASE  IF NOT EXISTS `genetx` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `genetx`;
 -- MySQL dump 10.13  Distrib 5.7.12, for osx10.9 (x86_64)
 --
--- Host: 127.0.0.1    Database: Intrepid2
+-- Host: 127.0.0.1    Database: genetx
 -- ------------------------------------------------------
 -- Server version	5.7.15
 
@@ -42,7 +44,7 @@ CREATE TABLE `PCBoks` (
   `pcBoksID` int(11) NOT NULL,
   `navn` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`pcBoksID`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -61,7 +63,6 @@ CREATE TABLE `PCBoksUnits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
-
 --
 -- Table structure for table `Unit`
 --
@@ -73,9 +74,16 @@ CREATE TABLE `Unit` (
   `unitID` int(11) NOT NULL,
   `apparatType` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`unitID`)
-) ENGINE=InnoDB AUTO_INCREMENT=443 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-
--- Dump completed on 2017-11-07 12:57:27
+-- Dump completed on 2017-11-07 15:44:51
