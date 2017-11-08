@@ -141,28 +141,28 @@ import households
 
 householdList = []
 
-for i in range(0, 40):
+for i in range(0, 5):
     householdList.append(households.HouseholdSingleWorker())
 
-for i in range(0, 40):
+for i in range(0, 5):
     householdList.append(households.HouseholdSingleRetired())
 
-for i in range(0, 40):
+for i in range(0, 5):
     householdList.append(households.HouseholdDualWorker(True))
 
-for i in range(0, 40):
+for i in range(0, 5):
     householdList.append(households.HouseholdDualWorker(False))
 
-for i in range(0, 40):
+for i in range(0, 5):
     householdList.append(households.HouseholdDualRetired())
 
-for i in range(0, 40):
+for i in range(0, 5):
     householdList.append(households.HouseholdFamilyDualWorker(True))
 
-for i in range(0, 40):
+for i in range(0, 5):
     householdList.append(households.HouseholdFamilyDualWorker(False))
 
-for i in range(0, 40):
+for i in range(0, 5):
     householdList.append(households.HouseholdFamilySingleWorker(True))
 
 numHouses = len(householdList)

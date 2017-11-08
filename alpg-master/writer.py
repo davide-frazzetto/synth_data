@@ -28,6 +28,33 @@ import config
 
 
 
+CHUNK_SIZE = 1000
+
+def insert_many(load, time_index, device_id):
+    index = 0
+    while True:
+
+        if index >= len(load):
+            break
+
+        values_str = ", ".join(
+            "('{0}', '{1}', '{2}')".format(time_index[i], load[i], device_id)
+            for i in range(index, min(index + CHUNK_SIZE, len(load)))
+        )
+
+        sql = "INSERT INTO LogWatt (date, watt, unitID) VALUES {0}".format(values_str)
+
+        db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
+                                               password='gattovolante666')
+        cursor = db_con_string.cursor()
+        cursor.execute(sql)
+        db_con_string.commit()
+
+        index += CHUNK_SIZE
+    db_con_string.close()
+
+
+
 def write_house(house):
     db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
                                             password='gattovolante666')
@@ -54,23 +81,7 @@ def write_device(device_name, house, load, time_index):
     cursor.execute(query, (config.device_id, house,))
     db_con_string.commit()
 
-    query = "INSERT INTO LogWatt(date, watt, unitID) VALUES"
-    # combine time index and load
-    for i in range(len(time_index)):
-        query += "('" + str(time_index[i]) + "'," + str(load[i]) + "," + str(config.device_id) + ")"
-        if i < len(time_index) - 1:
-            query += ",\n"
-
-    query += ";\n"
-
-    if not os.path.exists(config.folder + '/' + "insert"):
-        # overwrite
-        f = open(config.folder + '/' + "insert", 'w')
-    else:
-        # append
-        f = open(config.folder + '/' + "insert", 'a')
-    f.write(query)
-    f.close()
+    insert_many(load, time_index, config.device_id)
 
 
     config.device_id += 1
@@ -136,43 +147,43 @@ def writeNeighbourhood(num):
 # f.write(configFile[line] + '\n')
 # f.close()
 
-def write_non_flex_dev_to_db(device_name, house_num, load):
-    db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
-                                            password='gattovolante666')
-
-    time_index = config.time_index
-    cursor = db_con_string.cursor(prepared=True)
-    if len(load) != len(time_index):
-        raise Exception
-
-    # insert device
-    query = "INSERT INTO Unit(unitID, ApparatType) VALUES (%s, %s)"
-    cursor.execute(query, (config.device_id, device_name,))
-    db_con_string.commit()
-
-    query = "INSERT INTO PCBoksUnits(unitID, PCBoksID) VALUES(%s, %s)"
-    cursor.execute(query, (config.device_id, house_num,))
-    db_con_string.commit()
-
-    query = "INSERT INTO LogWatt(date, watt, unitID) VALUES"
-    # combine time index and load
-    for i in range(len(time_index)):
-        query += "('" + str(time_index[i]) + "'," + str(load[i]) + "," + str(config.device_id) + ")"
-        if i < len(time_index) -1:
-            query += ",\n"
-
-    query += ";\n"
-
-    if not os.path.exists(config.folder + '/' + "insert"):
-        # overwrite
-        f = open(config.folder + '/' + "insert", 'w')
-    else:
-        # append
-        f = open(config.folder + '/' + "insert", 'a')
-    f.write(query)
-    f.close()
-
-    config.device_id += 1
+# def write_non_flex_dev_to_db(device_name, house_num, load):
+#     db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
+#                                             password='gattovolante666')
+#
+#     time_index = config.time_index
+#     cursor = db_con_string.cursor(prepared=True)
+#     if len(load) != len(time_index):
+#         raise Exception
+#
+#     # insert device
+#     query = "INSERT INTO Unit(unitID, ApparatType) VALUES (%s, %s)"
+#     cursor.execute(query, (config.device_id, device_name,))
+#     db_con_string.commit()
+#
+#     query = "INSERT INTO PCBoksUnits(unitID, PCBoksID) VALUES(%s, %s)"
+#     cursor.execute(query, (config.device_id, house_num,))
+#     db_con_string.commit()
+#
+#     query = "INSERT INTO LogWatt(date, watt, unitID) VALUES"
+#     # combine time index and load
+#     for i in range(len(time_index)):
+#         query += "('" + str(time_index[i]) + "'," + str(load[i]) + "," + str(config.device_id) + ")"
+#         if i < len(time_index) -1:
+#             query += ",\n"
+#
+#     query += ";\n"
+#
+#     if not os.path.exists(config.folder + '/' + "insert"):
+#         # overwrite
+#         f = open(config.folder + '/' + "insert", 'w')
+#     else:
+#         # append
+#         f = open(config.folder + '/' + "insert", 'a')
+#     f.write(query)
+#     f.close()
+#
+#     config.device_id += 1
 
 
 def writeHousehold(house, num):
@@ -191,11 +202,12 @@ def writeHousehold(house, num):
     # writeCsvRow('Electricity_Profile_GroupStandby.csv', num, house.Consumption['Standby'])
 
     # write to DB
-    write_non_flex_dev_to_db('utility-primary-meter', num, house.Consumption['Total'])
-    write_non_flex_dev_to_db('kitchen-appliances', num, house.Consumption['Other'])
-    write_non_flex_dev_to_db('refrigerator', num, house.Consumption['Fridges'])
-    write_non_flex_dev_to_db('electronics', num, house.Consumption['Electronics'])
-    write_non_flex_dev_to_db('lighting', num, house.Consumption['Lighting'])
+    write_device('utility-primary-meter', num, house.Consumption['Total'], config.time_index)
+    write_device('kitchen-appliances', num, house.Consumption['Other'], config.time_index)
+    write_device('refrigerator', num, house.Consumption['Fridges'], config.time_index)
+    write_device('electronics', num, house.Consumption['Electronics'], config.time_index)
+    write_device('lighting', num, house.Consumption['Lighting'], config.time_index)
+
 
 
     # writeCsvRow('Reactive_Electricity_Profile.csv', num, house.ReactiveConsumption['Total'])
