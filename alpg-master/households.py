@@ -48,6 +48,8 @@ class Household:
 
         self.Persons = []
 
+        self.category = None
+
         self.Consumption = {"Total": [], \
                             "Other": [], \
                             "Inductive": [], \
@@ -362,7 +364,7 @@ class HouseholdSingleWorker(Household):
         # Average commute distance is not too clear from multiple sources, such as the once above. Something around 20km seems to be average in most sources
         # However 30 is also mentioned: http://www.nederlandheeftwerk.nl/index.php/cms_categorie/58707/bb/1/id/58707
         # Depends also on the region and work in vicinity.
-
+        self.category = "SingleWorker"
         self.Persons[0].setDistanceToWork(
             round(max(0, random.gauss(config.commuteDistanceMean, config.commuteDistanceSigma))))
 
@@ -398,6 +400,7 @@ class HouseholdDualWorker(Household):
         else:
             self.Persons = [persons.PersonWorker(age), persons.PersonWorker(age)]
 
+        self.category = "DualWorker"
         # To make life easy, only one persons.Person will use the electric vehicle, so only the main persons.Person will receive a driving distance
         self.Persons[0].setDistanceToWork(
             round(max(0, random.gauss(config.commuteDistanceMean, config.commuteDistanceSigma))))
@@ -433,6 +436,7 @@ class HouseholdFamilyDualWorker(Household):
         ageParents = random.randint(40, 55)
         self.Persons = [persons.PersonWorker(ageParents)]
 
+        self.category = "FamilyDualWorker"
         self.Persons.append(
             copy.deepcopy(self.Persons[0]))  # Make a copy, we expect a household to be rather synchronized!
         if parttime == True:
@@ -471,7 +475,7 @@ class HouseholdFamilySingleWorker(Household):
 
         ageParents = random.randint(40, 55)
         self.Persons = [persons.PersonWorker(ageParents)]
-
+        self.category = "FamilySingleWorker"
         self.Persons.append(
             copy.deepcopy(self.Persons[0]))  # Make a copy, we expect a household to be rather synchronized!
         if parttime == True:
@@ -511,6 +515,7 @@ class HouseholdFamilySingleParent(Household):
         ageParents = random.randint(40, 55)
         self.Persons = [persons.PersonWorker(ageParents)]
 
+        self.category = "FamilySingleParent"
         # To make life easy, only one persons.Person will use the electric vehicle, so only the main persons.Person will receive a driving distance
         self.Persons[0].setDistanceToWork(
             round(max(0, random.gauss(config.commuteDistanceMean, config.commuteDistanceSigma))))
@@ -541,6 +546,7 @@ class HouseholdDualRetired(Household):
         age = random.triangular(65, 85, 70)
         self.Persons = [persons.PersonRetired(age), persons.PersonRetired(age)]
 
+        self.category = "DualRetired"
         if (random.randint(1, 2) == 1):
             self.Fridges = [
                 devices.DeviceFridge(random.randint(config.ConsumptionFridgeBigMin, config.ConsumptionFridgeBigMax))]
@@ -577,7 +583,7 @@ class HouseholdSingleRetired(Household):
                 random.randint(config.ConsumptionFridgeSmallMin, config.ConsumptionFridgeSmallMax)),
                             devices.DeviceFridge(
                                 random.randint(config.ConsumptionFridgeSmallMin, config.ConsumptionFridgeSmallMax))]
-
+        self.category = "SingleRetired"
         self.hasDishwasher = random.randint(0, 5) < 3  # 40%
 
         # Determine washing days

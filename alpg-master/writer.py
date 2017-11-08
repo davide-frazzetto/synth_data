@@ -55,11 +55,11 @@ def insert_many(load, time_index, device_id):
 
 
 
-def write_house(house):
+def write_house(house, house_category):
     db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
                                             password='gattovolante666')
     cursor = db_con_string.cursor()
-    query = "INSERT INTO PCBoks(pcBoksID) VALUES(" + str(house) + ")"
+    query = "INSERT INTO PCBoks(pcBoksID, navn) VALUES(" + str(house) + ", '" + house_category + "')"
     cursor.execute(query, house)
     db_con_string.commit()
     db_con_string.close()
@@ -189,7 +189,7 @@ def writeNeighbourhood(num):
 def writeHousehold(house, num):
     #write house
 
-    write_house(num)
+    write_house(num, house.category)
 
 
     # Save the profile:
