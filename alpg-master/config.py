@@ -27,6 +27,7 @@ import dateutil.parser as parser
 from astral import Astral
 import pandas as pd
 import mysql
+import DB_config
 
 import profilegentools
 
@@ -169,8 +170,8 @@ numHouses = len(householdList)
 
 
 def cleanup_db():
-    db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
-                                            password='gattovolante666')
+    db_con_string = mysql.connector.connect(host=DB_config.host, database=DB_config.database, user=DB_config.user,
+                                            password=DB_config.password)
     cursor = db_con_string.cursor()
     query = "truncate table LogWatt"
     cursor.execute(query)
