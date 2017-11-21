@@ -263,6 +263,7 @@ def writeDeviceTimeshiftable(machine, hnum):
         # writeCsvLine('WashingMachine_Starttimes.txt', hnum, text)
         starting_times = text.split(":")[1].split(",")
 
+        #TODO user device flexibility modeled here
         # text = str(hnum) + ':'
         # text += profilegentools.createStringList(machine.EndTimes, None, 60)
         # # writeCsvLine('WashingMachine_Endtimes.txt', hnum, text)
