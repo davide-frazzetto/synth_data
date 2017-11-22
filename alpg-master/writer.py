@@ -30,22 +30,28 @@ import config
 
 CHUNK_SIZE = 1000
 
-def insert_many(load, time_index, device_id):
+def insert_many(load, time_index, device_id, flexibility = None):
     index = 0
     while True:
 
         if index >= len(load):
             break
-
-        values_str = ", ".join(
-            "('{0}', '{1}', '{2}')".format(time_index[i], load[i], device_id)
-            for i in range(index, min(index + CHUNK_SIZE, len(load)))
-        )
-
-        sql = "INSERT INTO LogWatt (date, watt, unitID) VALUES {0}".format(values_str)
+        if flexibility is not None:
+            values_str = ", ".join(
+                "('{0}', '{1}', '{2}', '{3}')".format(time_index[i], load[i], device_id, flexibility[i])
+                for i in range(index, min(index + CHUNK_SIZE, len(load)))
+            )
+            sql = "INSERT INTO LogWatt (date, watt, unitID, Flexibility) VALUES {0}".format(values_str)
+        else:
+            values_str = ", ".join(
+                "('{0}', '{1}', '{2}')".format(time_index[i], load[i], device_id)
+                for i in range(index, min(index + CHUNK_SIZE, len(load)))
+            )
+            sql = "INSERT INTO LogWatt (date, watt, unitID) VALUES {0}".format(values_str)
+        
 
         db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
-                                               password='gattovolante666')
+                                               password='Daisy@949')
         cursor = db_con_string.cursor()
         cursor.execute(sql)
         db_con_string.commit()
@@ -57,7 +63,7 @@ def insert_many(load, time_index, device_id):
 
 def write_house(house, house_category):
     db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
-                                            password='gattovolante666')
+                                            password='Daisy@949')
     cursor = db_con_string.cursor()
     query = "INSERT INTO PCBoks(pcBoksID, navn) VALUES(" + str(house) + ", '" + house_category + "')"
     cursor.execute(query, house)
@@ -65,9 +71,9 @@ def write_house(house, house_category):
     db_con_string.close()
 
 
-def write_device(device_name, house, load, time_index):
+def write_device(device_name, house, load, time_index, flexibility = None):
     db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
-                                                   password='gattovolante666')
+                                                   password='Daisy@949')
     cursor = db_con_string.cursor(prepared=True)
     if len(load) != len(time_index):
         raise Exception
@@ -81,21 +87,24 @@ def write_device(device_name, house, load, time_index):
     cursor.execute(query, (config.device_id, house,))
     db_con_string.commit()
 
-    insert_many(load, time_index, config.device_id)
+    insert_many(load, time_index, config.device_id, flexibility)
 
 
     config.device_id += 1
 
 
-def device_time_series_generator(times, profile):
+def device_time_series_generator(times, end_time, profile):
     column = [0] * (config.numDays * 24 * 60)
-    for activation_second in times:
+    flex_min = [0] * (config.numDays * 24 * 60)
+    for idx, activation_second in enumerate(times):
         starting_index = int(activation_second) / 60
+        ending_index =  int(end_time[idx])/ 60
+        flex_hours = ending_index - starting_index
         for i in range(len(profile)):
             # profile--index 0: active power, index 1: reactive power
             column[starting_index + i] = float(profile[i].split(',')[0])
-
-    return column
+            flex_min[starting_index + i] = flex_hours - i
+    return column, flex_min
 
 
 def writeCsvLine(fname, hnum, line):
@@ -264,15 +273,16 @@ def writeDeviceTimeshiftable(machine, hnum):
         starting_times = text.split(":")[1].split(",")
 
         #TODO user device flexibility modeled here
-        # text = str(hnum) + ':'
-        # text += profilegentools.createStringList(machine.EndTimes, None, 60)
+        text = str(hnum) + ':'
+        text += profilegentools.createStringList(machine.EndTimes, None, 60)
+        end_times = text.split(":")[1].split(",")
         # # writeCsvLine('WashingMachine_Endtimes.txt', hnum, text)
 
         text = str(hnum) + ':'
         text += machine.LongProfile
         # writeCsvLine('WashingMachine_Profile.txt', hnum, text)
-        load_series = device_time_series_generator(starting_times, machine.LongProfile.replace("complex","").replace("(","").split("),"))
-        write_device(machine.name, hnum, load_series, config.time_index)
+        load_series, flex_series = device_time_series_generator(starting_times, end_times, machine.LongProfile.replace("complex","").replace("(","").split("),"))
+        write_device(machine.name, hnum, load_series, config.time_index, flex_series)
 
 
 

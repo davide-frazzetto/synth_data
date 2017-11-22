@@ -1,4 +1,4 @@
 host = 'localhost'
 user = 'root'
-password = 'gattovolante666'
+password = 'Daisy@949'
 database = 'genetx'
