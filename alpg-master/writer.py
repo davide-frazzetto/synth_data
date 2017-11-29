@@ -25,6 +25,7 @@ import config
 import mysql.connector
 
 import config
+import DB_config
 
 
 
@@ -50,8 +51,8 @@ def insert_many(load, time_index, device_id, flexibility = None):
             sql = "INSERT INTO LogWatt (date, watt, unitID) VALUES {0}".format(values_str)
         
 
-        db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
-                                               password='Daisy@949')
+        db_con_string = mysql.connector.connect(host=DB_config.host, database=DB_config.database, user=DB_config.user,
+                                            password=DB_config.password)
         cursor = db_con_string.cursor()
         cursor.execute(sql)
         db_con_string.commit()
@@ -62,8 +63,8 @@ def insert_many(load, time_index, device_id, flexibility = None):
 
 
 def write_house(house, house_category):
-    db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
-                                            password='Daisy@949')
+    db_con_string = mysql.connector.connect(host=DB_config.host, database=DB_config.database, user=DB_config.user,
+                                            password=DB_config.password)
     cursor = db_con_string.cursor()
     query = "INSERT INTO PCBoks(pcBoksID, navn) VALUES(" + str(house) + ", '" + house_category + "')"
     cursor.execute(query, house)
@@ -72,8 +73,8 @@ def write_house(house, house_category):
 
 
 def write_device(device_name, house, load, time_index, flexibility = None):
-    db_con_string = mysql.connector.connect(host='localhost', database='genetx', user='root',
-                                                   password='Daisy@949')
+    db_con_string = mysql.connector.connect(host=DB_config.host, database=DB_config.database, user=DB_config.user,
+                                            password=DB_config.password)
     cursor = db_con_string.cursor(prepared=True)
     if len(load) != len(time_index):
         raise Exception
